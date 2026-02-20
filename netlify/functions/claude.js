@@ -49,7 +49,15 @@ exports.handler = async function(event) {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: { message: data.error.message } })
+        body: JSON.stringify({ error: { message: JSON.stringify(data.error) } })
+      };
+    }
+
+    if (!data.choices || !data.choices[0]) {
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: { message: 'Respuesta inesperada: ' + JSON.stringify(data).substring(0, 200) } })
       };
     }
 
