@@ -23,7 +23,7 @@ exports.handler = async function(event) {
         'Authorization': `Bearer ${process.env.COHERE_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'command-r-plus',
+        model: 'command-r-plus-08-2024',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
