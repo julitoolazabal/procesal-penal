@@ -3,11 +3,11 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: JSON.stringify({ error: { message: 'Method Not Allowed' } }) };
   }
 
-  if (!process.env.MISTRAL_API_KEY) {
+  if (!process.env.COHERE_API_KEY) {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: { message: 'API key de Mistral no configurada' } })
+      body: JSON.stringify({ error: { message: 'API key de Cohere no configurada' } })
     };
   }
 
@@ -16,14 +16,14 @@ exports.handler = async function(event) {
     const systemPrompt = body.system || '';
     const userMessage = body.messages[0].content;
 
-    const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    const response = await fetch('https://api.cohere.com/v2/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`
+        'Authorization': `Bearer ${process.env.COHERE_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'mistral-small-latest',
+        model: 'command-r-plus',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
@@ -45,27 +45,19 @@ exports.handler = async function(event) {
       };
     }
 
-    if (data.error) {
+    if (data.message && !data.message.content) {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: { message: JSON.stringify(data.error) } })
+        body: JSON.stringify({ error: { message: JSON.stringify(data).substring(0, 200) } })
       };
     }
 
-    if (!data.choices || !data.choices[0]) {
-      return {
-        statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: { message: 'Respuesta inesperada: ' + JSON.stringify(data).substring(0, 200) } })
-      };
-    }
-
-    const mistralText = data.choices[0].message.content;
+    const cohereText = data.message.content[0].text;
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: [{ type: 'text', text: mistralText }] })
+      body: JSON.stringify({ content: [{ type: 'text', text: cohereText }] })
     };
 
   } catch (err) {
