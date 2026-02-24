@@ -5543,7 +5543,8 @@ Reglas:
       throw new Error("Respuesta inesperada: " + JSON.stringify(data).substring(0, 100));
     }
 
-    raw = raw.replace(/```json|```/g, "").trim();
+   raw = raw.replace(/```json|```/g, "").trim();
+raw = raw.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
     const parsed = JSON.parse(raw);
     renderAnswer(q, parsed);
 
