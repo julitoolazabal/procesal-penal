@@ -5487,7 +5487,8 @@ function extraerArticulosRelevantes(consulta) {
     .filter(p => !['para','como','cuando','donde','quien','cuales','cuanto','tiene','puede','debe','hacer','sobre','entre','desde','hasta','esto','esta','cual'].includes(p));
 
   // Dividir el CPP en artículos
-  const articulos = CPP_TEXT.split(/(?=Art[ií]culo\s+\d+)/i);
+const articulos = CPP_TEXT.split(/(?=Art[ií]culo\s+\d+)/i);
+  if (articulos.length < 2) return CPP_TEXT.substring(0, 40000);
 
   // Puntuar cada artículo según cuántas palabras clave contiene
   const puntuados = articulos.map(art => {
